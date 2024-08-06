@@ -7,7 +7,6 @@ type DiceRollResult = {
 };
 
 // Constants
-const BASE_SUCCESS_PROBABILITY = 3 / 10;
 const DICE_SIDES = 10;
 const MIN_SUCCESS = 8;
 const WILLPOWER_DICE = 3;
@@ -36,36 +35,41 @@ const useDiceRoller = () => {
     setAgain(Math.min(10, Math.max(5, value)));
   };
 
+  const rollSingleDie = useCallback(
+    (againValue: number, isRote: boolean): number => {
+      const roll = rollDie();
+      if (roll < MIN_SUCCESS) {
+        if (isRote) {
+          return rollSingleDie(againValue, false);
+        }
+        return 0;
+      }
+
+      let successes = 1;
+      if (againEnabled && roll >= againValue) {
+        successes += rollSingleDie(againValue, false);
+      }
+      return successes;
+    },
+    [againEnabled]
+  );
+
   const rollDice = useCallback(
     (diceCount: number): number => {
       let successes = 0;
       for (let i = 0; i < diceCount; i++) {
-        let roll = rollDie();
-        if (roll >= MIN_SUCCESS) successes++;
-
-        if (againEnabled && roll >= again) {
-          while (roll >= again) {
-            roll = rollDie();
-            if (roll >= MIN_SUCCESS) successes++;
-          }
-        }
+        successes += rollSingleDie(again, rote);
       }
       return successes;
     },
-    [again, againEnabled]
+    [again, rote, rollSingleDie]
   );
 
   const handleRoll = useCallback((): void => {
-    let successes = rollDice(dices);
-
-    if (rote) {
-      const failedDice = dices - successes;
-      successes += rollDice(failedDice);
-    }
-
+    const successes = rollDice(dices);
     setResult({ successes, willpowerSuccesses: null });
     setJustRolled(true);
-  }, [dices, rote, rollDice]);
+  }, [dices, rollDice]);
 
   const handleWillpower = useCallback((): void => {
     const willpowerSuccesses = rollDice(WILLPOWER_DICE);
@@ -76,61 +80,39 @@ const useDiceRoller = () => {
     setJustRolled(true);
   }, [rollDice]);
 
-  const calculateEffectiveSuccessProbability = (
-    againEnabled: boolean,
-    again: number
-  ) => {
-    let probability = BASE_SUCCESS_PROBABILITY;
-    if (againEnabled) {
-      const againProbability = (DICE_SIDES + 1 - again) / DICE_SIDES;
-      probability +=
-        ((1 - BASE_SUCCESS_PROBABILITY) * againProbability) /
-        (1 - againProbability);
-    }
-    return probability;
-  };
-
-  const calculateChanceOfSuccess = (
-    effectiveSuccessProbability: number,
-    dices: number,
-    rote: boolean
-  ) => {
-    return rote
-      ? 1 - Math.pow(1 - effectiveSuccessProbability, 2 * dices)
-      : 1 - Math.pow(1 - effectiveSuccessProbability, dices);
-  };
-
-  const calculateExpectedSuccesses = (
-    effectiveSuccessProbability: number,
-    dices: number,
-    rote: boolean
-  ) => {
-    return rote
-      ? dices *
-          (effectiveSuccessProbability +
-            (1 - effectiveSuccessProbability) * effectiveSuccessProbability)
-      : dices * effectiveSuccessProbability;
-  };
+  const calculateExpectedSingle = useCallback(
+    (againValue: number, isRote: boolean): number => {
+      if (isRote) {
+        const rerollArea = 7;
+        const againArea = DICE_SIDES - againValue + 1;
+        const onlyArea = DICE_SIDES - rerollArea - againArea;
+        const rerollValue = calculateExpectedSingle(againValue, false);
+        const againSuccesses = 1 + calculateExpectedSingle(againValue, false);
+        const onlyValue = 1;
+        return (
+          (rerollValue * rerollArea +
+            againSuccesses * againArea +
+            onlyValue * onlyArea) /
+          DICE_SIDES
+        );
+      }
+      if (againValue >= 11 || !againEnabled) {
+        return 3 / DICE_SIDES;
+      }
+      return 3 / (againValue - 1);
+    },
+    [againEnabled]
+  );
 
   const calculateProbabilities = useCallback((): void => {
-    const effectiveSuccessProbability = calculateEffectiveSuccessProbability(
-      againEnabled,
-      again
-    );
-    const chanceOfSuccess = calculateChanceOfSuccess(
-      effectiveSuccessProbability,
-      dices,
-      rote
-    );
-    const expectedSuccesses = calculateExpectedSuccesses(
-      effectiveSuccessProbability,
-      dices,
-      rote
-    );
+    const expectedSingle = calculateExpectedSingle(again, rote);
+    const expectedTotal = expectedSingle * dices;
+    setExpected(isNaN(expectedTotal) ? 0 : Math.round(expectedTotal * 10) / 10);
 
-    setChance(Math.round(chanceOfSuccess * 100));
-    setExpected(Math.round(expectedSuccesses * 10) / 10);
-  }, [dices, again, rote, againEnabled]);
+    const chanceOfFailure = Math.pow(0.7, rote ? 2 * dices : dices);
+    const chanceOfSuccess = 1 - chanceOfFailure;
+    setChance(isNaN(chanceOfSuccess) ? 0 : Math.round(chanceOfSuccess * 100));
+  }, [dices, again, rote, calculateExpectedSingle]);
 
   useEffect(() => {
     calculateProbabilities();
