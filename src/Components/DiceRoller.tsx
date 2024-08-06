@@ -26,9 +26,24 @@ const useDiceRoller = () => {
   const [chance, setChance] = useState<number>(0);
   const [expected, setExpected] = useState<number>(0);
   const [justRolled, setJustRolled] = useState<boolean>(false);
+  const [isChanceDice, setIsChanceDice] = useState<boolean>(false);
 
   const handleSetDices = (value: number) => {
-    setDices(Math.max(0, value));
+    const newDiceCount = Math.max(0, value);
+    const wasChanceDice = dices === 0; // Check if it was a chance die before this change
+
+    setDices(newDiceCount);
+
+    if (newDiceCount === 0) {
+      setIsChanceDice(true);
+      setAgainEnabled(false);
+    } else {
+      setIsChanceDice(false);
+      // Enable "Again" rolls if coming from a chance die situation
+      if (wasChanceDice) {
+        setAgainEnabled(true);
+      }
+    }
   };
 
   const handleSetAgain = (value: number) => {
@@ -38,6 +53,9 @@ const useDiceRoller = () => {
   const rollSingleDie = useCallback(
     (againValue: number, isRote: boolean): number => {
       const roll = rollDie();
+      if (isChanceDice) {
+        return roll === 10 ? 1 : 0;
+      }
       if (roll < MIN_SUCCESS) {
         if (isRote) {
           return rollSingleDie(againValue, false);
@@ -51,7 +69,7 @@ const useDiceRoller = () => {
       }
       return successes;
     },
-    [againEnabled]
+    [againEnabled, isChanceDice]
   );
 
   const rollDice = useCallback(
@@ -66,10 +84,10 @@ const useDiceRoller = () => {
   );
 
   const handleRoll = useCallback((): void => {
-    const successes = rollDice(dices);
+    const successes = isChanceDice ? rollSingleDie(10, false) : rollDice(dices);
     setResult({ successes, willpowerSuccesses: null });
     setJustRolled(true);
-  }, [dices, rollDice]);
+  }, [dices, rollDice, isChanceDice, rollSingleDie]);
 
   const handleWillpower = useCallback((): void => {
     const willpowerSuccesses = rollDice(WILLPOWER_DICE);
@@ -82,6 +100,9 @@ const useDiceRoller = () => {
 
   const calculateExpectedSingle = useCallback(
     (againValue: number, isRote: boolean): number => {
+      if (isChanceDice) {
+        return 1 / DICE_SIDES;
+      }
       if (isRote) {
         const rerollArea = 7;
         const againArea = DICE_SIDES - againValue + 1;
@@ -101,10 +122,15 @@ const useDiceRoller = () => {
       }
       return 3 / (againValue - 1);
     },
-    [againEnabled]
+    [againEnabled, isChanceDice]
   );
 
   const calculateProbabilities = useCallback((): void => {
+    if (isChanceDice) {
+      setExpected(0.1);
+      setChance(10);
+      return;
+    }
     const expectedSingle = calculateExpectedSingle(again, rote);
     const expectedTotal = expectedSingle * dices;
     setExpected(isNaN(expectedTotal) ? 0 : Math.round(expectedTotal * 10) / 10);
@@ -112,7 +138,7 @@ const useDiceRoller = () => {
     const chanceOfFailure = Math.pow(0.7, rote ? 2 * dices : dices);
     const chanceOfSuccess = 1 - chanceOfFailure;
     setChance(isNaN(chanceOfSuccess) ? 0 : Math.round(chanceOfSuccess * 100));
-  }, [dices, again, rote, calculateExpectedSingle]);
+  }, [dices, again, rote, againEnabled, calculateExpectedSingle, isChanceDice]);
 
   useEffect(() => {
     calculateProbabilities();
@@ -145,13 +171,15 @@ const useDiceRoller = () => {
     handleRoll,
     handleWillpower,
     handleClear,
+    isChanceDice,
+    handleSetDices,
   };
 };
 
 export function DiceRoller(): JSX.Element {
   const {
     dices,
-    setDices,
+    handleSetDices,
     again,
     setAgain,
     rote,
@@ -165,6 +193,7 @@ export function DiceRoller(): JSX.Element {
     handleRoll,
     handleWillpower,
     handleClear,
+    isChanceDice,
   } = useDiceRoller();
 
   return (
@@ -181,7 +210,7 @@ export function DiceRoller(): JSX.Element {
                 id="dices"
                 type="number"
                 value={dices}
-                onChange={(e) => setDices(Number(e.target.value))}
+                onChange={(e) => handleSetDices(Number(e.target.value))}
                 min="0"
                 className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
               />
@@ -197,7 +226,7 @@ export function DiceRoller(): JSX.Element {
                 onChange={(e) => setAgain(Number(e.target.value))}
                 min="5"
                 max="10"
-                disabled={!againEnabled}
+                disabled={!againEnabled || isChanceDice}
                 className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
               />
             </div>
@@ -209,6 +238,7 @@ export function DiceRoller(): JSX.Element {
                 checked={rote}
                 onChange={(e) => setRote(e.target.checked)}
                 className="mr-3 w-6 h-6"
+                disabled={isChanceDice}
               />
               Rote
             </label>
@@ -218,10 +248,16 @@ export function DiceRoller(): JSX.Element {
                 checked={againEnabled}
                 onChange={(e) => setAgainEnabled(e.target.checked)}
                 className="mr-3 w-6 h-6"
+                disabled={isChanceDice}
               />
               Enable "Again" rolls
             </label>
           </div>
+          {isChanceDice && (
+            <div className="mb-4 text-yellow-400 text-xl">
+              Chance Die: Only 10 counts as a success
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-8 mb-8">
             <div className="flex flex-col">
               <label className="text-2xl mb-2">Chance</label>
@@ -252,11 +288,11 @@ export function DiceRoller(): JSX.Element {
             <button
               onClick={handleWillpower}
               className={`px-6 py-4 rounded-lg transition-colors text-2xl ${
-                result.willpowerSuccesses === null
+                result.willpowerSuccesses === null && !isChanceDice
                   ? "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
                   : "bg-gray-600 cursor-not-allowed"
               }`}
-              disabled={result.willpowerSuccesses !== null}
+              disabled={result.willpowerSuccesses !== null || isChanceDice}
             >
               Willpower
             </button>
