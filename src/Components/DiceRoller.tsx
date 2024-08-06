@@ -138,7 +138,7 @@ const useDiceRoller = () => {
     const chanceOfFailure = Math.pow(0.7, rote ? 2 * dices : dices);
     const chanceOfSuccess = 1 - chanceOfFailure;
     setChance(isNaN(chanceOfSuccess) ? 0 : Math.round(chanceOfSuccess * 100));
-  }, [dices, again, rote, againEnabled, calculateExpectedSingle, isChanceDice]);
+  }, [dices, again, rote, calculateExpectedSingle, isChanceDice]);
 
   useEffect(() => {
     calculateProbabilities();
