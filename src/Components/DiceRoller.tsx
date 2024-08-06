@@ -140,22 +140,22 @@ export function DiceRoller(): JSX.Element {
     } = useDiceRoller();
   
     return (
-        <div className="min-h-screen bg-[#242424] text-white p-4 flex flex-col">
-        <div className="w-full max-w-lg mx-auto">
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label htmlFor="dices" className="block mb-1">Dices:</label>
+      <div className="min-h-screen w-screen bg-[#242424] text-white p-4 pt-8">
+        <div className="w-full max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 gap-8 mb-8">
+            <div className="flex flex-col">
+              <label htmlFor="dices" className="text-2xl mb-2">Dices:</label>
               <input
                 id="dices"
                 type="number"
                 value={dices}
                 onChange={(e) => setDices(Number(e.target.value))}
                 min="0"
-                className="w-full bg-[#1a1a1a] text-white px-2 py-1 rounded border border-gray-600"
+                className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
               />
             </div>
-            <div>
-              <label htmlFor="again" className="block mb-1">Again:</label>
+            <div className="flex flex-col">
+              <label htmlFor="again" className="text-2xl mb-2">Again:</label>
               <input
                 id="again"
                 type="number"
@@ -163,62 +163,64 @@ export function DiceRoller(): JSX.Element {
                 onChange={(e) => setAgain(Number(e.target.value))}
                 max="10"
                 disabled={!againEnabled}
-                className="w-full bg-[#1a1a1a] text-white px-2 py-1 rounded border border-gray-600"
+                className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
               />
             </div>
           </div>
-          <div className="mb-4 space-y-2">
-            <label className="flex items-center">
+          <div className="mb-8 space-y-4">
+            <label className="flex items-center text-xl">
               <input
                 type="checkbox"
                 checked={rote}
                 onChange={(e) => setRote(e.target.checked)}
-                className="mr-2"
+                className="mr-3 w-6 h-6"
               />
               Rote
             </label>
-            <label className="flex items-center">
+            <label className="flex items-center text-xl">
               <input
                 type="checkbox"
                 checked={againEnabled}
                 onChange={(e) => setAgainEnabled(e.target.checked)}
-                className="mr-2"
+                className="mr-3 w-6 h-6"
               />
               Enable "Again" rolls
             </label>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block mb-1">Chance:</label>
-              <div className="bg-[#1a1a1a] px-2 py-1 rounded border border-gray-600">{chance}%</div>
+          <div className="grid grid-cols-2 gap-8 mb-8">
+            <div className="flex flex-col">
+              <label className="text-2xl mb-2">Chance:</label>
+              <div className="bg-[#1a1a1a] px-4 py-3 rounded-lg border border-gray-600 text-3xl">{chance}%</div>
             </div>
-            <div>
-              <label className="block mb-1">Expected:</label>
-              <div className="bg-[#1a1a1a] px-2 py-1 rounded border border-gray-600">{expected}</div>
+            <div className="flex flex-col">
+              <label className="text-2xl mb-2">Expected:</label>
+              <div className="bg-[#1a1a1a] px-4 py-3 rounded-lg border border-gray-600 text-3xl">{expected}</div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-8">
-            <button onClick={handleClear} className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-4 py-2 rounded transition-colors">Clear</button>
-            <button onClick={handleRoll} className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-4 py-2 rounded transition-colors">Roll</button>
+          <div className="grid grid-cols-3 gap-8 mb-12">
+            <button onClick={handleClear} className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-6 py-4 rounded-lg transition-colors text-2xl">Clear</button>
+            <button onClick={handleRoll} className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-6 py-4 rounded-lg transition-colors text-2xl">Roll</button>
             <button 
               onClick={handleWillpower} 
-              className={`px-4 py-2 rounded transition-colors ${result.willpowerSuccesses === null ? 'bg-[#1a1a1a] hover:bg-[#2a2a2a]' : 'bg-gray-600 cursor-not-allowed'}`}
+              className={`px-6 py-4 rounded-lg transition-colors text-2xl ${result.willpowerSuccesses === null ? 'bg-[#1a1a1a] hover:bg-[#2a2a2a]' : 'bg-gray-600 cursor-not-allowed'}`}
               disabled={result.willpowerSuccesses !== null}
             >
               Willpower
             </button>
           </div>
-        </div>
-        <div className="flex-grow flex items-center justify-center">
-          <div className={`text-center text-9xl font-bold transition-transform duration-300 ${justRolled ? 'scale-110' : 'scale-100'}`}>
-            {result.successes}
+          <div className="flex flex-col items-center">
+            <div className={`text-9xl md:text-[12rem] lg:text-[16rem] font-bold transition-transform duration-300 ${justRolled ? 'scale-110' : 'scale-100'}`}>
+              {result.successes}
+            </div>
+            <div className="h-16 flex items-center justify-center">
+              {result.willpowerSuccesses !== null && (
+                <div className="text-center text-3xl">
+                  ( {result.willpowerSuccesses} from Willpower)
+                </div>
+              )}
+            </div>
           </div>
         </div>
-        {result.willpowerSuccesses !== null && (
-          <div className="text-center mt-2">
-            ( {result.willpowerSuccesses} from Willpower)
-          </div>
-        )}
       </div>
     );
   }
