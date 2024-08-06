@@ -78,6 +78,12 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                 Load
               </button>
               <button
+                onClick={() => onUpdatePreset(preset.id, currentSettings)}
+                className="mr-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] px-2 py-1 rounded transition-colors"
+              >
+                Update
+              </button>
+              <button
                 onClick={() => onDeletePreset(preset.id)}
                 className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded transition-colors"
               >
