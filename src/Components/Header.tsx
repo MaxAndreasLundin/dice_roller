@@ -10,16 +10,20 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="w-full">
+      <div className=" mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          <div className="flex-1"></div>
-          <div className="flex-1 text-center">
+          <div className="flex items-center">
+            <img
+              src="/dice-d10-white.svg"
+              alt="Dice D10"
+              className="h-8 w-8 mr-2"
+            />
             <span className="text-white font-bold text-xl">
               Chronicles of Darkness Dice Roller
             </span>
           </div>
-          <div className="flex-1 flex justify-end items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <button
               onClick={toggleDarkMode}
               className="text-gray-300 hover:text-white focus:outline-none transition-colors bg-transparent border-none p-1"
