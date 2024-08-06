@@ -25,6 +25,14 @@ const useDiceRoller = () => {
   const [expected, setExpected] = useState<number>(0);
   const [justRolled, setJustRolled] = useState<boolean>(false);
 
+  const handleSetDices = (value: number) => {
+    setDices(Math.max(0, value));
+  };
+
+  const handleSetAgain = (value: number) => {
+    setAgain(Math.min(10, value));
+  };
+
   const rollDice = useCallback((diceCount: number): number => {
     let successes = 0;
     for (let i = 0; i < diceCount; i++) {
@@ -62,24 +70,31 @@ const useDiceRoller = () => {
     setJustRolled(true);
   }, [rollDice]);
 
-  const calculateProbabilities = useCallback((): void => {
-    let effectiveSuccessProbability = BASE_SUCCESS_PROBABILITY;
-  
+  const calculateEffectiveSuccessProbability = (againEnabled: boolean, again: number) => {
+    let probability = BASE_SUCCESS_PROBABILITY;
     if (againEnabled) {
       const againProbability = (DICE_SIDES + 1 - again) / DICE_SIDES;
-      effectiveSuccessProbability = BASE_SUCCESS_PROBABILITY + (1 - BASE_SUCCESS_PROBABILITY) * againProbability * (1 / (1 - againProbability));
+      probability += (1 - BASE_SUCCESS_PROBABILITY) * againProbability / (1 - againProbability);
     }
+    return probability;
+  };
+
+  const calculateChanceOfSuccess = (effectiveSuccessProbability: number, dices: number, rote: boolean) => {
+    return rote
+      ? 1 - Math.pow(1 - effectiveSuccessProbability, 2 * dices)
+      : 1 - Math.pow(1 - effectiveSuccessProbability, dices);
+  };
   
-    let chanceOfSuccess: number;
-    let expectedSuccesses: number;
-  
-    if (rote) {
-      chanceOfSuccess = 1 - Math.pow(1 - effectiveSuccessProbability, 2 * dices);
-      expectedSuccesses = dices * (effectiveSuccessProbability + (1 - effectiveSuccessProbability) * effectiveSuccessProbability);
-    } else {
-      chanceOfSuccess = 1 - Math.pow(1 - effectiveSuccessProbability, dices);
-      expectedSuccesses = dices * effectiveSuccessProbability;
-    }
+  const calculateExpectedSuccesses = (effectiveSuccessProbability: number, dices: number, rote: boolean) => {
+    return rote
+      ? dices * (effectiveSuccessProbability + (1 - effectiveSuccessProbability) * effectiveSuccessProbability)
+      : dices * effectiveSuccessProbability;
+  };
+
+  const calculateProbabilities = useCallback((): void => {
+    const effectiveSuccessProbability = calculateEffectiveSuccessProbability(againEnabled, again);
+    const chanceOfSuccess = calculateChanceOfSuccess(effectiveSuccessProbability, dices, rote);
+    const expectedSuccesses = calculateExpectedSuccesses(effectiveSuccessProbability, dices, rote);
   
     setChance(Math.round(chanceOfSuccess * 100));
     setExpected(Math.round(expectedSuccesses * 10) / 10);
@@ -101,8 +116,10 @@ const useDiceRoller = () => {
   };
 
   return {
-    dices, setDices,
-    again, setAgain,
+    dices,
+    setDices: handleSetDices,
+    again,
+    setAgain: handleSetAgain,
     rote, setRote,
     againEnabled, setAgainEnabled,
     result, chance, expected,
@@ -123,7 +140,7 @@ export function DiceRoller(): JSX.Element {
     } = useDiceRoller();
   
     return (
-      <div className="min-h-screen bg-[#242424] text-white p-4 flex flex-col">
+        <div className="min-h-screen bg-[#242424] text-white p-4 flex flex-col">
         <div className="w-full max-w-lg mx-auto">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
@@ -133,6 +150,7 @@ export function DiceRoller(): JSX.Element {
                 type="number"
                 value={dices}
                 onChange={(e) => setDices(Number(e.target.value))}
+                min="0"
                 className="w-full bg-[#1a1a1a] text-white px-2 py-1 rounded border border-gray-600"
               />
             </div>
@@ -143,6 +161,7 @@ export function DiceRoller(): JSX.Element {
                 type="number"
                 value={again}
                 onChange={(e) => setAgain(Number(e.target.value))}
+                max="10"
                 disabled={!againEnabled}
                 className="w-full bg-[#1a1a1a] text-white px-2 py-1 rounded border border-gray-600"
               />
