@@ -272,7 +272,7 @@ export function DiceRoller(): JSX.Element {
             <div className="h-16 flex items-center justify-center">
               {result.willpowerSuccesses !== null && (
                 <div className="text-center text-3xl">
-                  ( {result.willpowerSuccesses} from Willpower)
+                  {result.willpowerSuccesses} from Willpower
                 </div>
               )}
             </div>
