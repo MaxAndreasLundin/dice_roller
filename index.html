@@ -23,10 +23,71 @@
         }
       }
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <link
+      rel="preload"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <!-- Async Font Loading -->
+    <script>
+      !(function (e) {
+        "use strict";
+        var n = function (n, t, o) {
+          function i(e) {
+            return d.body
+              ? e()
+              : void setTimeout(function () {
+                  i(e);
+                });
+          }
+          function r() {
+            s.addEventListener && s.removeEventListener("load", r),
+              (s.media = o || "all");
+          }
+          var d = e.document,
+            s = d.createElement("link");
+          if (t)
+            (s.href = t),
+              (s.rel = "stylesheet"),
+              (s.type = "text/css"),
+              (s.media = "only x"),
+              i(function () {
+                d.head.appendChild(s);
+              });
+          else if (
+            ((s.rel = "preload"),
+            (s.as = "style"),
+            (s.href = n),
+            (s.onload = r),
+            (s.media = o || "all"),
+            i(function () {
+              d.head.appendChild(s);
+            }),
+            s.addEventListener)
+          )
+            s.addEventListener("load", r);
+          return s;
+        };
+        "undefined" != typeof module ? (module.exports = n) : (e.loadCSS = n);
+      })("undefined" != typeof global ? global : this);
+    </script>
+    <script>
+      loadCSS(
+        "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      );
+    </script>
   </head>
   <body class="bg-gray-900 text-white font-sans">
     <div id="root"></div>
