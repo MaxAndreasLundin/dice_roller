@@ -1,4 +1,6 @@
 import { useDiceRoller } from "../hooks/useDiceRoller";
+import { Preset, usePresets } from "../hooks/usePresets";
+import { PresetManager } from "./PresetManager";
 
 export function DiceRoller(): JSX.Element {
   const {
@@ -19,6 +21,15 @@ export function DiceRoller(): JSX.Element {
     handleClear,
     isChanceDice,
   } = useDiceRoller();
+
+  const { presets, addPreset, updatePreset, deletePreset } = usePresets();
+
+  const handleLoadPreset = (preset: Preset) => {
+    handleSetDices(preset.dices);
+    setAgain(preset.again);
+    setRote(preset.rote);
+    setAgainEnabled(preset.againEnabled);
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,6 +149,16 @@ export function DiceRoller(): JSX.Element {
             </div>
           </div>
         </div>
+      </div>
+      <div className="w-full lg:w-1/2 px-4">
+        <PresetManager
+          currentSettings={{ dices, again, rote, againEnabled }}
+          presets={presets}
+          onAddPreset={addPreset}
+          onUpdatePreset={updatePreset}
+          onDeletePreset={deletePreset}
+          onLoadPreset={handleLoadPreset}
+        />
       </div>
     </div>
   );
