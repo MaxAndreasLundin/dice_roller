@@ -1,4 +1,4 @@
-import { DiceRoller } from './Components/DiceRoller';
+import { DiceRoller } from "./Components/DiceRoller";
 
 function App() {
   return <DiceRoller />;
