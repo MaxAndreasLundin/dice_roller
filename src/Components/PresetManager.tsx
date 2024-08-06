@@ -20,7 +20,10 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
 }) => {
   const [newPresetName, setNewPresetName] = useState("");
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
-  const [clickedButton, setClickedButton] = useState<string | null>(null);
+  const [clickedButton, setClickedButton] = useState<{
+    id: string;
+    type: string;
+  } | null>(null);
 
   const handleAddPreset = () => {
     if (newPresetName) {
@@ -34,8 +37,12 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
     setEditingPresetId(null);
   };
 
-  const handleButtonClick = (buttonId: string, callback: () => void) => {
-    setClickedButton(buttonId);
+  const handleButtonClick = (
+    buttonId: string,
+    buttonType: string,
+    callback: () => void
+  ) => {
+    setClickedButton({ id: buttonId, type: buttonType });
     callback();
     setTimeout(() => {
       setClickedButton(null);
@@ -54,9 +61,9 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
           className="w-full bg-[#1a1a1a] text-white px-4 py-2 rounded-lg border border-gray-600"
         />
         <button
-          onClick={() => handleButtonClick("add", handleAddPreset)}
+          onClick={() => handleButtonClick("add", "add", handleAddPreset)}
           className={`mt-2 px-4 py-2 rounded-lg transition-colors ${
-            clickedButton === "add"
+            clickedButton?.id === "add" && clickedButton.type === "add"
               ? "bg-green-600"
               : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
           }`}
@@ -86,10 +93,13 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
             <div>
               <button
                 onClick={() =>
-                  handleButtonClick("load", () => onLoadPreset(preset))
+                  handleButtonClick(preset.id, "load", () =>
+                    onLoadPreset(preset)
+                  )
                 }
                 className={`mr-2 px-2 py-1 rounded transition-colors ${
-                  clickedButton === "load"
+                  clickedButton?.id === preset.id &&
+                  clickedButton.type === "load"
                     ? "bg-blue-600"
                     : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
                 }`}
@@ -98,12 +108,13 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
               </button>
               <button
                 onClick={() =>
-                  handleButtonClick("update", () =>
+                  handleButtonClick(preset.id, "update", () =>
                     onUpdatePreset(preset.id, currentSettings)
                   )
                 }
                 className={`mr-2 px-2 py-1 rounded transition-colors ${
-                  clickedButton === "update"
+                  clickedButton?.id === preset.id &&
+                  clickedButton.type === "update"
                     ? "bg-yellow-600"
                     : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
                 }`}
