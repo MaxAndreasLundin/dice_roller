@@ -20,6 +20,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
 }) => {
   const [newPresetName, setNewPresetName] = useState("");
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+  const [clickedButton, setClickedButton] = useState<string | null>(null);
 
   const handleAddPreset = () => {
     if (newPresetName) {
@@ -31,6 +32,14 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
   const handleUpdatePresetName = (id: string, newName: string) => {
     onUpdatePreset(id, { name: newName });
     setEditingPresetId(null);
+  };
+
+  const handleButtonClick = (buttonId: string, callback: () => void) => {
+    setClickedButton(buttonId);
+    callback();
+    setTimeout(() => {
+      setClickedButton(null);
+    }, 300); // Animation duration
   };
 
   return (
@@ -45,8 +54,12 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
           className="w-full bg-[#1a1a1a] text-white px-4 py-2 rounded-lg border border-gray-600"
         />
         <button
-          onClick={handleAddPreset}
-          className="mt-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] px-4 py-2 rounded-lg transition-colors"
+          onClick={() => handleButtonClick("add", handleAddPreset)}
+          className={`mt-2 px-4 py-2 rounded-lg transition-colors ${
+            clickedButton === "add"
+              ? "bg-green-600"
+              : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
+          }`}
         >
           Add Current Settings as Preset
         </button>
@@ -72,20 +85,34 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
             )}
             <div>
               <button
-                onClick={() => onLoadPreset(preset)}
-                className="mr-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] px-2 py-1 rounded transition-colors"
+                onClick={() =>
+                  handleButtonClick("load", () => onLoadPreset(preset))
+                }
+                className={`mr-2 px-2 py-1 rounded transition-colors ${
+                  clickedButton === "load"
+                    ? "bg-blue-600"
+                    : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
+                }`}
               >
                 Load
               </button>
               <button
-                onClick={() => onUpdatePreset(preset.id, currentSettings)}
-                className="mr-2 bg-[#1a1a1a] hover:bg-[#2a2a2a] px-2 py-1 rounded transition-colors"
+                onClick={() =>
+                  handleButtonClick("update", () =>
+                    onUpdatePreset(preset.id, currentSettings)
+                  )
+                }
+                className={`mr-2 px-2 py-1 rounded transition-colors ${
+                  clickedButton === "update"
+                    ? "bg-yellow-600"
+                    : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
+                }`}
               >
                 Update
               </button>
               <button
                 onClick={() => onDeletePreset(preset.id)}
-                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded transition-colors"
+                className="bg-[#1a1a1a] hover:bg-red-700 px-2 py-1 rounded transition-colors"
               >
                 Delete
               </button>
