@@ -2,6 +2,10 @@
 
 This project is a digital dice roller for the Chronicles of Darkness tabletop role-playing game system. It provides an intuitive interface for rolling dice and calculating successes based on the game's rules, including features like "Again" rolls and Rote quality.
 
+## Disclaimer
+
+This is a fan-made tool for use with Chronicles of Darkness tabletop roleplaying games. It is not affiliated with, endorsed, sponsored, or specifically approved by Paradox Interactive AB or White Wolf Publishing. Chronicles of Darkness and White Wolf are trademarks and/or registered trademarks of Paradox Interactive AB.
+
 ## Features
 
 - Roll any number of 10-sided dice
@@ -47,3 +51,15 @@ To run the application in development mode:
 ```bash
 bun run dev
 ```
+
+## Linting
+
+To run the linter:
+
+```bash
+bun run lint
+```
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
