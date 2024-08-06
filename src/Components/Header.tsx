@@ -27,6 +27,7 @@ const Header: React.FC = () => {
             <button
               onClick={toggleDarkMode}
               className="text-gray-300 hover:text-white focus:outline-none transition-colors bg-transparent border-none p-1"
+              aria-label={isDarkMode ? "Enable light mode" : "Enable dark mode"}
             >
               {isDarkMode ? (
                 <svg
@@ -63,6 +64,7 @@ const Header: React.FC = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-white transition-colors"
+              aria-label="View source code on GitHub"
             >
               <svg
                 className="h-6 w-6"
