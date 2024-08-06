@@ -22,7 +22,7 @@ const Header: React.FC = () => {
           <div className="flex-1 flex justify-end items-center space-x-4">
             <button
               onClick={toggleDarkMode}
-              className="text-gray-300 hover:text-white focus:outline-none transition-colors"
+              className="text-gray-300 hover:text-white focus:outline-none transition-colors bg-transparent border-none p-1"
             >
               {isDarkMode ? (
                 <svg
@@ -55,7 +55,7 @@ const Header: React.FC = () => {
               )}
             </button>
             <a
-              href="https://github.com/yourusername/your-repo"
+              href="https://github.com/MaxAndreasLundin/dice_roller"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-300 hover:text-white transition-colors"
