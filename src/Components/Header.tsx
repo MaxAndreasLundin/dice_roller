@@ -1,26 +1,64 @@
-import React from "react";
+import React, { useState } from "react";
 
 const Header: React.FC = () => {
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    // Here you would typically update your app's theme
+    // For now, we'll just toggle the state
+  };
+
   return (
-    <header className="bg-[#0F172A] border-b border-gray-800">
+    <header>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-6">
-          <div className="flex items-center">
-            <img
-              src="/dice-d10.svg"
-              alt="Dice Roller Logo"
-              className="h-8 w-8 mr-3"
-            />
+        <div className="flex justify-between items-center py-4">
+          <div className="flex-1"></div>
+          <div className="flex-1 text-center">
             <span className="text-white font-bold text-xl">
-              CoD Dice Roller
+              Chronicles of Darkness Dice Roller
             </span>
           </div>
-          <nav className="flex items-center">
+          <div className="flex-1 flex justify-end items-center space-x-4">
+            <button
+              onClick={toggleDarkMode}
+              className="text-gray-300 hover:text-white focus:outline-none transition-colors"
+            >
+              {isDarkMode ? (
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              )}
+            </button>
             <a
               href="https://github.com/yourusername/your-repo"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white"
+              className="text-gray-300 hover:text-white transition-colors"
             >
               <svg
                 className="h-6 w-6"
@@ -35,7 +73,7 @@ const Header: React.FC = () => {
                 />
               </svg>
             </a>
-          </nav>
+          </div>
         </div>
       </div>
     </header>
