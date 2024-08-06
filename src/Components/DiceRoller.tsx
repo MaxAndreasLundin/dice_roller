@@ -168,8 +168,8 @@ export function DiceRoller(): JSX.Element {
   } = useDiceRoller();
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-[#0F172A] to-[#1E293B] text-white p-4 pt-8">
-      <div className="w-full max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-xl p-8 shadow-xl overflow-hidden">
         <div className="grid grid-cols-2 gap-8 mb-8">
           <div className="flex flex-col">
             <label htmlFor="dices" className="text-2xl mb-2">
