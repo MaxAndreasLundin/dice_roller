@@ -175,7 +175,7 @@ export function DiceRoller(): JSX.Element {
           <div className="grid grid-cols-2 gap-8 mb-8">
             <div className="flex flex-col">
               <label htmlFor="dices" className="text-2xl mb-2">
-                Dices:
+                Dices
               </label>
               <input
                 id="dices"
@@ -188,7 +188,7 @@ export function DiceRoller(): JSX.Element {
             </div>
             <div className="flex flex-col">
               <label htmlFor="again" className="text-2xl mb-2">
-                Again:
+                Again
               </label>
               <input
                 id="again"
@@ -224,13 +224,13 @@ export function DiceRoller(): JSX.Element {
           </div>
           <div className="grid grid-cols-2 gap-8 mb-8">
             <div className="flex flex-col">
-              <label className="text-2xl mb-2">Chance:</label>
+              <label className="text-2xl mb-2">Chance</label>
               <div className="bg-[#1a1a1a] px-4 py-3 rounded-lg border border-gray-600 text-3xl">
                 {chance}%
               </div>
             </div>
             <div className="flex flex-col">
-              <label className="text-2xl mb-2">Expected:</label>
+              <label className="text-2xl mb-2">Expected</label>
               <div className="bg-[#1a1a1a] px-4 py-3 rounded-lg border border-gray-600 text-3xl">
                 {expected}
               </div>
