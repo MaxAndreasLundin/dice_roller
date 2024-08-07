@@ -1,6 +1,7 @@
 import { useDiceRoller } from "../hooks/useDiceRoller";
-import { Preset, usePresets } from "../hooks/usePresets";
+import { usePresetManager } from "../hooks/usePresetManager";
 import { PresetManager } from "./PresetManager";
+import { Preset } from "../hooks/usePresets";
 
 export function DiceRoller(): JSX.Element {
   const {
@@ -22,9 +23,38 @@ export function DiceRoller(): JSX.Element {
     isChanceDice,
   } = useDiceRoller();
 
-  const { presets, addPreset, updatePreset, deletePreset } = usePresets();
+  const {
+    presets,
+    addPreset,
+    updatePreset,
+    deletePreset,
+    activePresetId,
+    handleLoadPreset,
+    clearActivePreset,
+  } = usePresetManager({ dices, again, rote, againEnabled });
 
-  const handleLoadPreset = (preset: Preset) => {
+  const handleSetDicesWrapper = (newDices: number) => {
+    handleSetDices(newDices);
+    clearActivePreset();
+  };
+
+  const handleSetAgainWrapper = (newAgain: number) => {
+    setAgain(newAgain);
+    clearActivePreset();
+  };
+
+  const handleSetRoteWrapper = (newRote: boolean) => {
+    setRote(newRote);
+    clearActivePreset();
+  };
+
+  const handleSetAgainEnabledWrapper = (newAgainEnabled: boolean) => {
+    setAgainEnabled(newAgainEnabled);
+    clearActivePreset();
+  };
+
+  const handlePresetLoad = (preset: Preset) => {
+    handleLoadPreset(preset);
     handleSetDices(preset.dices);
     setAgain(preset.again);
     setRote(preset.rote);
@@ -45,7 +75,7 @@ export function DiceRoller(): JSX.Element {
                 id="dices"
                 type="number"
                 value={dices}
-                onChange={(e) => handleSetDices(Number(e.target.value))}
+                onChange={(e) => handleSetDicesWrapper(Number(e.target.value))}
                 min="0"
                 className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
               />
@@ -58,7 +88,7 @@ export function DiceRoller(): JSX.Element {
                 id="again"
                 type="number"
                 value={again}
-                onChange={(e) => setAgain(Number(e.target.value))}
+                onChange={(e) => handleSetAgainWrapper(Number(e.target.value))}
                 min="5"
                 max="10"
                 disabled={!againEnabled || isChanceDice}
@@ -71,7 +101,7 @@ export function DiceRoller(): JSX.Element {
               <input
                 type="checkbox"
                 checked={rote}
-                onChange={(e) => setRote(e.target.checked)}
+                onChange={(e) => handleSetRoteWrapper(e.target.checked)}
                 className="mr-3 w-6 h-6"
                 disabled={isChanceDice}
               />
@@ -81,7 +111,7 @@ export function DiceRoller(): JSX.Element {
               <input
                 type="checkbox"
                 checked={againEnabled}
-                onChange={(e) => setAgainEnabled(e.target.checked)}
+                onChange={(e) => handleSetAgainEnabledWrapper(e.target.checked)}
                 className="mr-3 w-6 h-6"
                 disabled={isChanceDice}
               />
@@ -157,7 +187,8 @@ export function DiceRoller(): JSX.Element {
           onAddPreset={addPreset}
           onUpdatePreset={updatePreset}
           onDeletePreset={deletePreset}
-          onLoadPreset={handleLoadPreset}
+          onLoadPreset={handlePresetLoad}
+          activePresetId={activePresetId}
         />
       </div>
     </div>
