@@ -137,22 +137,22 @@ export function DiceRoller(): JSX.Element {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6 lg:gap-8 mb-12">
             <button
               onClick={handleClear}
-              className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-6 py-4 rounded-lg transition-colors text-2xl"
+              className="flex items-center justify-center bg-[#1a1a1a] hover:bg-[#2a2a2a] px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 rounded-lg transition-colors text-sm sm:text-base md:text-lg lg:text-2xl"
             >
               Clear
             </button>
             <button
               onClick={handleRoll}
-              className="bg-[#1a1a1a] hover:bg-[#2a2a2a] px-6 py-4 rounded-lg transition-colors text-2xl"
+              className="flex items-center justify-center bg-[#1a1a1a] hover:bg-[#2a2a2a] px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 rounded-lg transition-colors text-sm sm:text-base md:text-lg lg:text-2xl"
             >
               Roll
             </button>
             <button
               onClick={handleWillpower}
-              className={`px-6 py-4 rounded-lg transition-colors text-2xl ${
+              className={`flex items-center justify-center px-2 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 rounded-lg transition-colors text-sm sm:text-base md:text-lg lg:text-2xl ${
                 result.willpowerSuccesses === null && !isChanceDice
                   ? "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
                   : "bg-gray-600 cursor-not-allowed"
