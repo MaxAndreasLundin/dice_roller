@@ -71,29 +71,73 @@ export function DiceRoller(): JSX.Element {
               <label htmlFor="dices" className="text-2xl mb-2">
                 Dices
               </label>
-              <input
-                id="dices"
-                type="number"
-                value={dices}
-                onChange={(e) => handleSetDicesWrapper(Number(e.target.value))}
-                min="0"
-                className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
-              />
+              <div className="number-input-wrapper">
+                <input
+                  id="dices"
+                  type="number"
+                  value={dices}
+                  onChange={(e) =>
+                    handleSetDicesWrapper(Number(e.target.value))
+                  }
+                  min="0"
+                  className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl number-input"
+                />
+                <div className="number-input-buttons">
+                  <button
+                    className="number-input-button"
+                    onClick={() => handleSetDicesWrapper(dices + 1)}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    className="number-input-button"
+                    onClick={() =>
+                      handleSetDicesWrapper(Math.max(0, dices - 1))
+                    }
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="flex flex-col">
               <label htmlFor="again" className="text-2xl mb-2">
                 Again
               </label>
-              <input
-                id="again"
-                type="number"
-                value={again}
-                onChange={(e) => handleSetAgainWrapper(Number(e.target.value))}
-                min="5"
-                max="10"
-                disabled={!againEnabled || isChanceDice}
-                className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl"
-              />
+              <div className="number-input-wrapper">
+                <input
+                  id="again"
+                  type="number"
+                  value={again}
+                  onChange={(e) =>
+                    handleSetAgainWrapper(Number(e.target.value))
+                  }
+                  min="5"
+                  max="10"
+                  disabled={!againEnabled || isChanceDice}
+                  className="w-full bg-[#1a1a1a] text-white px-4 py-3 rounded-lg border border-gray-600 text-3xl number-input"
+                />
+                <div className="number-input-buttons">
+                  <button
+                    className="number-input-button"
+                    onClick={() =>
+                      handleSetAgainWrapper(Math.min(10, again + 1))
+                    }
+                    disabled={!againEnabled || isChanceDice}
+                  >
+                    ▲
+                  </button>
+                  <button
+                    className="number-input-button"
+                    onClick={() =>
+                      handleSetAgainWrapper(Math.max(5, again - 1))
+                    }
+                    disabled={!againEnabled || isChanceDice}
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="mb-8 space-y-4">
