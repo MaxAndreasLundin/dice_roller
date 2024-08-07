@@ -8,6 +8,7 @@ type PresetManagerProps = {
   onUpdatePreset: (id: string, preset: Partial<Preset>) => void;
   onDeletePreset: (id: string) => void;
   onLoadPreset: (preset: Preset) => void;
+  activePresetId: string | null;
 };
 
 export const PresetManager: React.FC<PresetManagerProps> = ({
@@ -17,10 +18,11 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
   onUpdatePreset,
   onDeletePreset,
   onLoadPreset,
+  activePresetId,
 }) => {
   const [newPresetName, setNewPresetName] = useState("");
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
-  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [openPresetId, setOpenPresetId] = useState<string | null>(null);
   const [clickedButton, setClickedButton] = useState<{
     id: string;
     type: string;
@@ -40,7 +42,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
   };
 
   const handlePresetClick = useCallback((id: string) => {
-    setActivePresetId((prevId) => (prevId === id ? null : id));
+    setOpenPresetId((prevId) => (prevId === id ? null : id));
   }, []);
 
   const handleButtonClick = useCallback(
@@ -56,7 +58,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
 
       setTimeout(() => {
         setClickedButton(null);
-        setActivePresetId(null);
+        setOpenPresetId(null);
       }, 300);
     },
     []
@@ -68,7 +70,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
         popupRef.current &&
         !popupRef.current.contains(event.target as Node)
       ) {
-        setActivePresetId(null);
+        setOpenPresetId(null);
       }
     };
 
@@ -100,7 +102,11 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
         {presets.map((preset) => (
           <li
             key={preset.id}
-            className="relative rounded hover:bg-white hover:bg-opacity-10"
+            className={`relative rounded transition-all duration-300 ${
+              activePresetId === preset.id
+                ? "bg-white bg-opacity-20 border border-white border-opacity-50"
+                : "hover:bg-white hover:bg-opacity-10"
+            }`}
           >
             <div
               className="flex items-center justify-between p-2 cursor-pointer"
@@ -122,7 +128,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                 <span className="truncate">{preset.name}</span>
               )}
             </div>
-            {activePresetId === preset.id && (
+            {openPresetId === preset.id && (
               <div
                 ref={popupRef}
                 className="absolute right-0 top-full mt-1 flex space-x-1 p-1 bg-[#1a1a1a] rounded shadow-lg z-10"
