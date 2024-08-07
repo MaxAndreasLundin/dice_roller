@@ -48,12 +48,77 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Updated styles for number input */
+.number-input {
+  min-width: 60px;
+  padding-right: 30px !important;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.number-input::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.number-input-wrapper {
+  position: relative;
+}
+
+.number-input-buttons {
+  position: absolute;
+  right: 5px;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: 25px;
+}
+
+.number-input-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.number-input-button:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.number-input-button:active {
+  color: white;
+}
+
+.number-input-button:disabled {
+  color: rgba(255, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+  .number-input-button {
+    color: rgba(0, 0, 0, 0.6);
   }
-  button {
-    background-color: #f9f9f9;
+
+  .number-input-button:hover {
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  .number-input-button:active {
+    color: black;
+  }
+
+  .number-input-button:disabled {
+    color: rgba(0, 0, 0, 0.3);
   }
 }
