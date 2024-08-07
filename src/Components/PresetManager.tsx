@@ -1,4 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import { Preset } from "../hooks/usePresets";
 
 type PresetManagerProps = {
@@ -8,8 +14,27 @@ type PresetManagerProps = {
   onUpdatePreset: (id: string, preset: Partial<Preset>) => void;
   onDeletePreset: (id: string) => void;
   onLoadPreset: (preset: Preset) => void;
+  onReorderPresets: (newPresets: Preset[]) => void;
   activePresetId: string | null;
 };
+
+const MoreOptionsIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="1" />
+    <circle cx="12" cy="5" r="1" />
+    <circle cx="12" cy="19" r="1" />
+  </svg>
+);
 
 export const PresetManager: React.FC<PresetManagerProps> = ({
   currentSettings,
@@ -18,16 +43,17 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
   onUpdatePreset,
   onDeletePreset,
   onLoadPreset,
+  onReorderPresets,
   activePresetId,
 }) => {
   const [newPresetName, setNewPresetName] = useState("");
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
-  const [openPresetId, setOpenPresetId] = useState<string | null>(null);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [clickedButton, setClickedButton] = useState<{
     id: string;
     type: string;
   } | null>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleAddPreset = () => {
     if (newPresetName) {
@@ -41,8 +67,16 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
     setEditingPresetId(null);
   };
 
-  const handlePresetClick = useCallback((id: string) => {
-    setOpenPresetId((prevId) => (prevId === id ? null : id));
+  const handlePresetClick = useCallback(
+    (preset: Preset) => {
+      onLoadPreset(preset);
+    },
+    [onLoadPreset]
+  );
+
+  const handleMenuClick = useCallback((e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setOpenMenuId((prevId) => (prevId === id ? null : id));
   }, []);
 
   const handleButtonClick = useCallback(
@@ -58,19 +92,28 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
 
       setTimeout(() => {
         setClickedButton(null);
-        setOpenPresetId(null);
+        setOpenMenuId(null);
       }, 300);
     },
     []
   );
 
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const newPresets = Array.from(presets);
+    const [reorderedItem] = newPresets.splice(result.source.index, 1);
+    newPresets.splice(result.destination.index, 0, reorderedItem);
+
+    onReorderPresets(newPresets);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setOpenPresetId(null);
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
       }
     };
 
@@ -98,86 +141,98 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
           Add Current Settings as Preset
         </button>
       </div>
-      <ul className="space-y-2">
-        {presets.map((preset) => (
-          <li
-            key={preset.id}
-            className={`relative rounded transition-all duration-300 ${
-              activePresetId === preset.id
-                ? "bg-white bg-opacity-20 border border-white border-opacity-50"
-                : "hover:bg-white hover:bg-opacity-10"
-            }`}
-          >
-            <div
-              className="flex items-center justify-between p-2 cursor-pointer"
-              onClick={() => handlePresetClick(preset.id)}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="presets">
+          {(provided) => (
+            <ul
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className="space-y-2"
             >
-              {editingPresetId === preset.id ? (
-                <input
-                  type="text"
-                  value={preset.name}
-                  onChange={(e) =>
-                    handleUpdatePresetName(preset.id, e.target.value)
-                  }
-                  onBlur={() => setEditingPresetId(null)}
-                  autoFocus
-                  className="bg-[#1a1a1a] text-white px-2 py-1 rounded"
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <span className="truncate">{preset.name}</span>
-              )}
-            </div>
-            {openPresetId === preset.id && (
-              <div
-                ref={popupRef}
-                className="absolute right-0 top-full mt-1 flex space-x-1 p-1 bg-[#1a1a1a] rounded shadow-lg z-10"
-              >
-                <button
-                  onClick={(e) =>
-                    handleButtonClick(e, preset.id, "load", () =>
-                      onLoadPreset(preset)
-                    )
-                  }
-                  className={`px-2 py-1 rounded text-sm transition-colors ${
-                    clickedButton?.id === preset.id &&
-                    clickedButton.type === "load"
-                      ? "bg-blue-600"
-                      : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
-                  }`}
+              {presets.map((preset, index) => (
+                <Draggable
+                  key={preset.id}
+                  draggableId={preset.id}
+                  index={index}
                 >
-                  Load
-                </button>
-                <button
-                  onClick={(e) =>
-                    handleButtonClick(e, preset.id, "update", () =>
-                      onUpdatePreset(preset.id, currentSettings)
-                    )
-                  }
-                  className={`px-2 py-1 rounded text-sm transition-colors ${
-                    clickedButton?.id === preset.id &&
-                    clickedButton.type === "update"
-                      ? "bg-yellow-600"
-                      : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
-                  }`}
-                >
-                  Update
-                </button>
-                <button
-                  onClick={(e) =>
-                    handleButtonClick(e, preset.id, "delete", () =>
-                      onDeletePreset(preset.id)
-                    )
-                  }
-                  className="px-2 py-1 rounded text-sm bg-[#1a1a1a] hover:bg-red-700 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+                  {(provided) => (
+                    <li
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className={`relative rounded transition-all duration-300 ${
+                        activePresetId === preset.id
+                          ? "bg-white bg-opacity-20 border border-white border-opacity-50"
+                          : "hover:bg-white hover:bg-opacity-10"
+                      }`}
+                    >
+                      <div
+                        className="flex items-center justify-between p-2 cursor-pointer"
+                        onClick={() => handlePresetClick(preset)}
+                      >
+                        {editingPresetId === preset.id ? (
+                          <input
+                            type="text"
+                            value={preset.name}
+                            onChange={(e) =>
+                              handleUpdatePresetName(preset.id, e.target.value)
+                            }
+                            onBlur={() => setEditingPresetId(null)}
+                            autoFocus
+                            className="bg-[#1a1a1a] text-white px-2 py-1 rounded"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        ) : (
+                          <span className="truncate">{preset.name}</span>
+                        )}
+                        <button
+                          onClick={(e) => handleMenuClick(e, preset.id)}
+                          className="p-1 rounded-full hover:bg-white hover:bg-opacity-20"
+                        >
+                          <MoreOptionsIcon />
+                        </button>
+                      </div>
+                      {openMenuId === preset.id && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-0 top-full mt-1 flex flex-col space-y-1 p-1 bg-[#1a1a1a] rounded shadow-lg z-10"
+                        >
+                          <button
+                            onClick={(e) =>
+                              handleButtonClick(e, preset.id, "update", () =>
+                                onUpdatePreset(preset.id, currentSettings)
+                              )
+                            }
+                            className={`px-2 py-1 rounded text-sm transition-colors ${
+                              clickedButton?.id === preset.id &&
+                              clickedButton.type === "update"
+                                ? "bg-yellow-600"
+                                : "bg-[#1a1a1a] hover:bg-[#2a2a2a]"
+                            }`}
+                          >
+                            Update
+                          </button>
+                          <button
+                            onClick={(e) =>
+                              handleButtonClick(e, preset.id, "delete", () =>
+                                onDeletePreset(preset.id)
+                              )
+                            }
+                            className="px-2 py-1 rounded text-sm bg-[#1a1a1a] hover:bg-red-700 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };

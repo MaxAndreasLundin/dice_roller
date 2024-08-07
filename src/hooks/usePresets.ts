@@ -24,9 +24,11 @@ export const usePresets = () => {
     localStorage.setItem("diceRollerPresets", JSON.stringify(newPresets));
   };
 
-  const addPreset = (preset: Omit<Preset, "id">) => {
+  const addPreset = (preset: Omit<Preset, "id">): Preset => {
     const newPreset = { ...preset, id: Date.now().toString() };
-    savePresets([...presets, newPreset]);
+    const updatedPresets = [...presets, newPreset];
+    savePresets(updatedPresets);
+    return newPreset;
   };
 
   const updatePreset = (id: string, updatedPreset: Partial<Preset>) => {
