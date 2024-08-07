@@ -31,6 +31,7 @@ export function DiceRoller(): JSX.Element {
     activePresetId,
     handleLoadPreset,
     clearActivePreset,
+    reorderPresets,
   } = usePresetManager({ dices, again, rote, againEnabled });
 
   const handleSetDicesWrapper = (newDices: number) => {
@@ -232,6 +233,7 @@ export function DiceRoller(): JSX.Element {
           onUpdatePreset={updatePreset}
           onDeletePreset={deletePreset}
           onLoadPreset={handlePresetLoad}
+          onReorderPresets={reorderPresets}
           activePresetId={activePresetId}
         />
       </div>
