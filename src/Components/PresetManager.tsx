@@ -124,7 +124,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
   }, []);
 
   return (
-    <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-xl p-8 shadow-xl">
+    <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-xl">
       <h2 className="text-2xl mb-4">Presets</h2>
       <div className="mb-4">
         <input
@@ -162,8 +162,8 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                       {...provided.dragHandleProps}
                       className={`relative rounded transition-all duration-300 ${
                         activePresetId === preset.id
-                          ? "bg-white bg-opacity-20 border border-white border-opacity-50"
-                          : "hover:bg-white hover:bg-opacity-10"
+                          ? "bg-white/20 border border-white/50"
+                          : "hover:bg-white/10"
                       }`}
                     >
                       <div
@@ -187,7 +187,7 @@ export const PresetManager: React.FC<PresetManagerProps> = ({
                         )}
                         <button
                           onClick={(e) => handleMenuClick(e, preset.id)}
-                          className="p-1 rounded-full hover:bg-white hover:bg-opacity-20"
+                          className="p-1 rounded-full hover:bg-white/20"
                         >
                           <MoreOptionsIcon />
                         </button>

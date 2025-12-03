@@ -64,7 +64,7 @@ export function DiceRoller(): JSX.Element {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row">
-      <div className="relative bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-xl p-8 shadow-xl overflow-hidden flex-grow">
+      <div className="relative bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-xl overflow-hidden flex-grow">
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5"></div>
         <div className="relative z-10">
           <div className="grid grid-cols-2 gap-8 mb-8">
