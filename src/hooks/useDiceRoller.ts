@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 
 type DiceRollResult = {
   successes: number;
@@ -20,8 +20,6 @@ export const useDiceRoller = () => {
     successes: 0,
     willpowerSuccesses: null,
   });
-  const [chance, setChance] = useState<number>(0);
-  const [expected, setExpected] = useState<number>(0);
   const [justRolled, setJustRolled] = useState<boolean>(false);
   const [isChanceDice, setIsChanceDice] = useState<boolean>(false);
 
@@ -122,24 +120,25 @@ export const useDiceRoller = () => {
     [againEnabled, isChanceDice]
   );
 
-  const calculateProbabilities = useCallback((): void => {
+  // Memoize expensive probability calculations
+  const { expected, chance } = useMemo(() => {
     if (isChanceDice) {
-      setExpected(0.1);
-      setChance(10);
-      return;
+      return { expected: 0.1, chance: 10 };
     }
     const expectedSingle = calculateExpectedSingle(again, rote);
     const expectedTotal = expectedSingle * dices;
-    setExpected(isNaN(expectedTotal) ? 0 : Math.round(expectedTotal * 10) / 10);
+    const expectedValue = isNaN(expectedTotal)
+      ? 0
+      : Math.round(expectedTotal * 10) / 10;
 
     const chanceOfFailure = Math.pow(0.7, rote ? 2 * dices : dices);
     const chanceOfSuccess = 1 - chanceOfFailure;
-    setChance(isNaN(chanceOfSuccess) ? 0 : Math.round(chanceOfSuccess * 100));
-  }, [dices, again, rote, calculateExpectedSingle, isChanceDice]);
+    const chanceValue = isNaN(chanceOfSuccess)
+      ? 0
+      : Math.round(chanceOfSuccess * 100);
 
-  useEffect(() => {
-    calculateProbabilities();
-  }, [dices, again, rote, againEnabled, calculateProbabilities]);
+    return { expected: expectedValue, chance: chanceValue };
+  }, [dices, again, rote, againEnabled, calculateExpectedSingle, isChanceDice]);
 
   useEffect(() => {
     if (justRolled) {

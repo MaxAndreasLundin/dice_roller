@@ -35,11 +35,19 @@ export function DiceRoller(): JSX.Element {
   } = usePresetManager({ dices, again, rote, againEnabled });
 
   const handleSetDicesWrapper = (newDices: number) => {
+    // Validate input is a valid number
+    if (isNaN(newDices) || !isFinite(newDices)) {
+      return;
+    }
     handleSetDices(newDices);
     clearActivePreset();
   };
 
   const handleSetAgainWrapper = (newAgain: number) => {
+    // Validate input is a valid number
+    if (isNaN(newAgain) || !isFinite(newAgain)) {
+      return;
+    }
     setAgain(newAgain);
     clearActivePreset();
   };
@@ -87,6 +95,7 @@ export function DiceRoller(): JSX.Element {
                   <button
                     className="number-input-button"
                     onClick={() => handleSetDicesWrapper(dices + 1)}
+                    aria-label="Increase dice count"
                   >
                     ▲
                   </button>
@@ -95,6 +104,7 @@ export function DiceRoller(): JSX.Element {
                     onClick={() =>
                       handleSetDicesWrapper(Math.max(0, dices - 1))
                     }
+                    aria-label="Decrease dice count"
                   >
                     ▼
                   </button>
@@ -125,6 +135,7 @@ export function DiceRoller(): JSX.Element {
                       handleSetAgainWrapper(Math.min(10, again + 1))
                     }
                     disabled={!againEnabled || isChanceDice}
+                    aria-label="Increase again threshold"
                   >
                     ▲
                   </button>
@@ -134,6 +145,7 @@ export function DiceRoller(): JSX.Element {
                       handleSetAgainWrapper(Math.max(5, again - 1))
                     }
                     disabled={!againEnabled || isChanceDice}
+                    aria-label="Decrease again threshold"
                   >
                     ▼
                   </button>
