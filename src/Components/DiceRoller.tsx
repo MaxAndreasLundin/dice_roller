@@ -173,7 +173,7 @@ export function DiceRoller() {
                 className="mr-3 w-6 h-6"
                 disabled={isChanceDice}
               />
-              Enable "Again" rolls
+              Enable &quot;Again&quot; rolls
             </label>
           </div>
           {isChanceDice && (
