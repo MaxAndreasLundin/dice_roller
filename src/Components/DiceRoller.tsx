@@ -3,7 +3,7 @@ import { usePresetManager } from "../hooks/usePresetManager";
 import { PresetManager } from "./PresetManager";
 import { Preset } from "../hooks/usePresets";
 
-export function DiceRoller(): JSX.Element {
+export function DiceRoller() {
   const {
     dices,
     handleSetDices,
@@ -72,8 +72,9 @@ export function DiceRoller(): JSX.Element {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row">
-      <div className="relative bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-xl overflow-hidden flex-grow">
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5"></div>
+      <div className="relative bg-white/[0.15] backdrop-blur-[40px] backdrop-saturate-200 rounded-3xl p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] border-t border-l border-white/40 border-r border-b border-white/10 overflow-hidden flex-grow before:absolute before:inset-0 before:rounded-3xl before:p-[1px] before:bg-gradient-to-br before:from-white/60 before:via-white/20 before:to-transparent before:-z-10 before:blur-sm">
+        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.15] via-transparent to-black/5"></div>
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent"></div>
         <div className="relative z-10">
           <div className="grid grid-cols-2 gap-8 mb-8">
             <div className="flex flex-col">
